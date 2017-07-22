@@ -1,0 +1,90 @@
+200.1 Messen und Problembehndlung bei der Ressourcenverwendung
+Wichtung:6
+
+* Erfassung dr CPU-Verwendung
+
+* Erfassen der Speicherauslastung
+
+* Erfassen von Disk I/O
+
+* Erfassen von Netzwerk I/O
+
+* Erfassen von Firewall- und Routingdurchsatz
+
+* Abbilden der Client-Bandbreitenverwendung
+
+* Vergleichen und Korrelieren von Systemsymptomen mit ähnlichen Problemen
+
+* Abschätzen des Durchsatzes und Identifizieren von Engpässen in einem System, inklusive Netzwerk
+
+Wichtige Programme:
+
+* sar und iostat (benötigen das Paket sysstat bzw. sind darin enthalten)
+
+Lesen im pseudoverzeichnis /proc - Messungen können auch als normaler Benutzer durchgeführt werden.
+
+Beispiel für die Nutzung von sar bei der Messung der Prozessoraktivität
+
+Fünf Messungen in dreisekundigen Abständen (erste Zahl Sekunden, zweite Zahl Anzahl der Messungen)
+Linux 4.9.6 (Microknoppix) 	21.07.2017 	_i686_	(1 CPU)
+
+20:41:13        CPU     %user     %nice   %system   %iowait    %steal     %idle
+20:41:16        all      1,00      0,00      0,67      1,00      0,00     97,33
+20:41:19        all      0,67      0,00      0,33      0,00      0,00     99,00
+20:41:22        all      0,00      0,00      0,67      0,00      0,00     99,33
+20:41:25        all      0,33      0,00      0,33      0,00      0,00     99,33
+20:41:28        all      0,33      0,00      0,33      0,00      0,00     99,33
+Durchschn.:     all      0,47      0,00      0,47      0,20      0,00     98,87
+
+%iowait - hier wurde auf I/O von Datenträgern gewartet
+
+--> manpage ist sehr interessant.
+
+sar kann auch verwendet werden um Netzwerkschnittstellen zu untersuchen.
+
+$ sar -n DEV 5 1
+Linux 4.9.6 (Microknoppix) 	21.07.2017 	_i686_	(1 CPU)
+
+20:44:19        IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s   %ifutil
+20:44:24         eth0      0,00      0,00      0,00      0,00      0,00      0,00      0,00      0,00
+20:44:24        wlan0      0,00      0,00      0,00      0,00      0,00      0,00      0,00      0,00
+20:44:24           lo      0,00      0,00      0,00      0,00      0,00      0,00      0,00      0,00
+
+Durchschn.:     IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s   %ifutil
+Durchschn.:      eth0      0,00      0,00      0,00      0,00      0,00      0,00      0,00      0,00
+Durchschn.:     wlan0      0,00      0,00      0,00      0,00      0,00      0,00      0,00      0,00
+Durchschn.:        lo      0,00      0,00      0,00      0,00      0,00      0,00      0,00      0,00
+
+sar mit der option -b liest I/O-Transferraten
+
+sar -b 10 3 (wieder erste Zahl = Zeitabstand, zweite Zahl = Anzahl der Messungen)
+
+Linux 4.9.6 (Microknoppix) 	21.07.2017 	_i686_	(1 CPU)
+
+21:20:58          tps      rtps      wtps   bread/s   bwrtn/s
+21:21:08         8,80      8,70      0,10    888,80      4,00
+21:21:18         7,13      5,52      1,61    526,10    201,61
+21:21:28        31,53     29,72      1,81   3538,15    229,72
+Durchschn.:     15,81     14,64      1,17   1650,00    144,92
+
+
+
+tps - Gesamtzahl der Transfers 
+rtps - Anzahl der Lesezugriffe
+wtps - Anzahl der Schreibzugriffe
+bread  - Gelesene Blöcke/Sekunde (1 Block hat 512 Bytes)
+bwrtn - Geschriebene Blöcke/Sekunde (1 block hat 512 Bytes)
+
+Sammlung kann auch als Daemon erfolgen --> sysstat im Hintergrund laufen
+lassen
+
+sudo /etc/init.d/sysstat start
+
+Anzeige nach 10 Minuten mit 
+sar -A
+
+
+
+
+iostat
+
